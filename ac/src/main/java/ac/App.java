@@ -6,6 +6,13 @@ package ac;
  */
 public class App 
 {
+	/*
+	 * finding patterns using regular expressions, translation of HTML to text,
+	 * ranking web pages using sorting, heaps or other data structures,
+	 * finding keywords using string matching, use of inverted index, analyzing frequencies using hash tables or search trees,
+	 * using large dictionaries/datasets, sorting techniques, search trees, spellchecking keywords or HTML files, and many others.  
+	 */
+	 
     public static void main( String[] args )
     {
         System.out.println( "Hello World!" );
