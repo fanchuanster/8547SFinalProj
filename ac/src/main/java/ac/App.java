@@ -21,9 +21,9 @@ public class App
         System.out.println( "Hello World!" );
         
 //        WebCrawler crawler = new WebCrawler("https://www.newsmax.com/");
-        WebCrawler crawler = new WebCrawler("http://www.mkyong.com", new Proxy(Proxy.Type.HTTP, 
-  			  new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
-        crawler.trustEveryone();
+        WebCrawler crawler = new WebCrawler("http://www.mkyong.com", 
+        		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
+//        crawler.trustEveryone();
         
         int count = crawler.downloadPages();
         
