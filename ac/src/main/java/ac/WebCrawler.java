@@ -24,16 +24,16 @@ import java.security.cert.X509Certificate;
 public class WebCrawler {
 
 	String initialUrl;
+	Proxy proxy;
 	int depth;
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
 	final String outputDir = "output/pages/";
 	
-	Proxy proxy = new Proxy(Proxy.Type.HTTP, 
-			  new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080));
-	
-	WebCrawler(String url) {
+	WebCrawler(String url, Proxy proxy) {
 		this.initialUrl = url;
+		this.proxy = proxy;
+		
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
 		
