@@ -86,7 +86,7 @@ public class WebCrawler {
             FileWriter fw = new FileWriter(outputDir + filename);
             fw.write(document.body().text());
             fw.close();
-            System.out.println( "downloaded " + filename );
+            System.out.println( "downloaded " + filename + " from " + url);
             
             pageProcessed++;
             
