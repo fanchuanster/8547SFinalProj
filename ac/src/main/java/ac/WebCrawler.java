@@ -20,6 +20,8 @@ import javax.net.ssl.*;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class WebCrawler {
 
@@ -41,6 +43,17 @@ public class WebCrawler {
 	    if (! directory.exists()){
 	        directory.mkdirs();
 	    }
+	}
+	
+	private URL parseUrl(String url) {
+        try {
+            URL u = new URL(url);
+            return u;
+        }
+        catch (MalformedURLException e) {
+            System.out.println("Malformed URL: " + e.getMessage());
+        }
+        return null;
 	}
 	
 	public void trustEveryone() {
@@ -69,7 +82,14 @@ public class WebCrawler {
 	         e.printStackTrace();
 	    }
 	}
-	
+	private boolean internalUrl(String url) {
+		URL u = this.parseUrl(this.initialUrl);
+		URL inUrl = this.parseUrl(url);
+		if (inUrl == null) {
+			return false;
+		}
+		return u.getHost().equals(inUrl.getHost());
+	}
 	private int processPage(String url, int depth) {
 		if (this.links.contains(url) || this.invalidLinks.contains(url)) {
 			return 0;
@@ -82,7 +102,7 @@ public class WebCrawler {
 					  .get();
             links.add(url);
             
-            String filename = String.format("%s.%d.txt", document.title().replaceAll("\s", ""), System.nanoTime());
+            String filename = String.format("%s.%d.txt", document.title().replaceAll("[\s,|]+", ""), System.nanoTime());
             FileWriter fw = new FileWriter(outputDir + filename);
             fw.write(document.body().text());
             fw.close();
@@ -94,7 +114,10 @@ public class WebCrawler {
 
             depth++;
             for (Element link : pageLinks) {
-            	pageProcessed += processPage(link.attr("abs:href"), depth);
+            	String childUrl = link.attr("abs:href");
+            	if (this.internalUrl(childUrl)) {
+            		pageProcessed += processPage(link.attr("abs:href"), depth);
+            	}
             }
         } catch (IOException e) {
             System.err.println("For '" + url + "': " + e.getMessage());
