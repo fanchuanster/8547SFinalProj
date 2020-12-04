@@ -7,11 +7,11 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class util {
+public class Util {
 	
 	 public static String[] findPattern(File file, Pattern pattern) {
 		
-	    Matcher matcher = pattern.matcher(util.readFile(file));
+	    Matcher matcher = pattern.matcher(readFile(file));
 	    // Check all occurrences
 	    ArrayList<String> emails = new ArrayList<String>();
 	    while (matcher.find()) {	        
