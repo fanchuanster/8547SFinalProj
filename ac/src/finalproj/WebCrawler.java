@@ -28,17 +28,18 @@ public class WebCrawler {
 	String initialUrl;
 	int depth;
 	int maximum;
+	String outputDir;
 	Proxy proxy;
 	int pagesProcessed;
 	
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
-	final String outputDir = "output/pages/";
 	
-	WebCrawler(String url, int depth, int maximum, Proxy proxy) {
+	WebCrawler(String url, int depth, int maximum, String outputDir, Proxy proxy) {
 		this.initialUrl = url;
 		this.proxy = proxy;
 		this.depth = depth;
+		this.outputDir = outputDir;
 		this.maximum = maximum;
 		
 		this.pagesProcessed = 0;

@@ -18,9 +18,11 @@ public class App
 	 
     public static void main( String[] args )
     {
+    	String outputDir = "output/pages/";
+    	
         System.out.println( "Hello World!" );
         
-        WebCrawler crawler = new WebCrawler("https://www.newsmax.com/", 3, 50,
+        WebCrawler crawler = new WebCrawler("https://www.newsmax.com/", 3, 50, outputDir,
         		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
 //        crawler.trustEveryone();
         
