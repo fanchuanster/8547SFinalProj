@@ -63,32 +63,6 @@ public class WebCrawler {
         return null;
 	}
 	
-	public void trustEveryone() {
-	    try {
-	        HttpsURLConnection.setDefaultHostnameVerifier(new HostnameVerifier() {
-	            @Override
-	            public boolean verify(String hostname, SSLSession session) {
-	                return true;
-	            }
-	        });
-	        SSLContext context = SSLContext.getInstance("TLS");
-	        context.init(null, new X509TrustManager[] { new X509TrustManager() {
-	            @Override
-	            public void checkClientTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-	            }
-	            @Override
-	            public void checkServerTrusted(X509Certificate[] chain, String authType) throws CertificateException {
-	            }
-	            @Override
-	            public X509Certificate[] getAcceptedIssuers() {
-	                return new X509Certificate[0];
-	            }
-	        } }, new SecureRandom());
-	        HttpsURLConnection.setDefaultSSLSocketFactory(context.getSocketFactory());
-	    } catch (Exception e) {
-	         e.printStackTrace();
-	    }
-	}
 	private boolean internalUrl(String url) {
 		URL u = this.parseUrl(this.initialUrl);
 		URL inUrl = this.parseUrl(url);
@@ -102,6 +76,13 @@ public class WebCrawler {
 			return;
 		}
 		
+		if (this.depth != 0 && depth >= this.depth) {
+        	return;
+        }
+        if (this.maximum != 0 && this.filenameToUrl.size() >= this.maximum) {
+        	return;
+        }
+        		
 		try {
             Document document = Jsoup.connect(url)
 					  .proxy(this.proxy)
@@ -112,18 +93,10 @@ public class WebCrawler {
             FileWriter fw = new FileWriter(outputDir + filename);
             fw.write(document.body().text());
             fw.close();
-            System.out.println( "downloaded " + filename + " from " + url);
+            System.out.println((this.filenameToUrl.size()+1)+"/"+(depth+1) + " downloaded " + filename + " from " + url);
             this.filenameToUrl.put(filename, url);
             
-            depth++;
-            
-            if (this.depth != 0 && depth > this.depth) {
-            	return;
-            }
-            if (this.maximum != 0 && this.filenameToUrl.size() > this.maximum) {
-            	return;
-            }
-            	
+            depth++;            	
             Elements pageLinks = document.select("a[href]");
             for (Element link : pageLinks) {
             	String childUrl = link.attr("abs:href");
