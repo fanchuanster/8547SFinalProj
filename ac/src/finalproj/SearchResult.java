@@ -14,6 +14,6 @@ public class SearchResult implements Comparable<SearchResult> {
 
 	@Override
 	public int compareTo(SearchResult o) {
-		return Integer.compare(this.occurrences, o.occurrences);
+		return Integer.compare(o.occurrences, this.occurrences);
 	}
 }

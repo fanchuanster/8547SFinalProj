@@ -75,14 +75,16 @@ public class WebSearchEngine {
         		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
 		int count = crawler.downloadPages();
 		
-		System.out.println(String.format("%d pages downloaded spreading from %s", count, url));
+//		System.out.println(String.format("%d pages downloaded spreading from %s", count, url));
 		
-		Pattern pattern = Pattern.compile(keyword);
+		Pattern pattern = Pattern.compile(keyword, Pattern.CASE_INSENSITIVE);
+		
 		File pagesDir = new File(crawler.getPagesDir());
 		List<SearchResult> results = new ArrayList<SearchResult>();
 		for (final File file : pagesDir.listFiles()) {
 			int occurrences = searchFile(pattern, file);
 			String pageUrl = crawler.filenameToUrl(file.getName());
+			assert(pageUrl != null);
 			SearchResult res = new SearchResult(keyword, occurrences, pageUrl);
 			results.add(res);
 		}
@@ -100,7 +102,7 @@ public class WebSearchEngine {
         WebSearchEngine engine = new WebSearchEngine();
         List<SearchResult> tops = engine.search("newsmax", url, 10);
         
-        tops.stream().map(s -> String.format("%d\t%s", s.occurrences, s.pageUrl)).forEach(System.out::print);
+        tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
         
 //        System.out.println( "Hello! Please input a string to search for" );
 //        String word = sc.nextLine();
