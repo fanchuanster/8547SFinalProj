@@ -17,10 +17,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import javax.net.ssl.*;
-import java.security.SecureRandom;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -46,10 +42,19 @@ public class WebCrawler {
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
 		this.filenameToUrl = new Hashtable<String, String>();
+		
+		/*
+		 * prepare an empty output folder for downloading.
+		 */
 		File directory = new File(this.outputDir);
 	    if (! directory.exists()){
 	        directory.mkdirs();
-	    }
+	    } else {
+	    	File[] files = directory.listFiles();
+	    	for (File f : files ) {
+	    		f.delete();
+	    	}		    
+	    }	    
 	}
 	
 	private URL parseUrl(String url) {
@@ -94,6 +99,7 @@ public class WebCrawler {
             fw.write(document.body().text());
             fw.close();
             System.out.println((this.filenameToUrl.size()+1)+"/"+(depth+1) + " downloaded " + filename + " from " + url);
+            assert !this.filenameToUrl.containsKey(filename) : filename + " already exists";
             this.filenameToUrl.put(filename, url);
             
             depth++;            	

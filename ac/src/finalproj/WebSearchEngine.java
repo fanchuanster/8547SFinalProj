@@ -26,7 +26,7 @@ import heaps.BinaryHeap;
 
 public class WebSearchEngine {
 	
-	final int MaxPages = 10;
+	final int MaxPages = 5;
 	final int Depth = 3;
 	
 	/**
@@ -84,7 +84,7 @@ public class WebSearchEngine {
 		for (final File file : pagesDir.listFiles()) {
 			int occurrences = searchFile(pattern, file);
 			String pageUrl = crawler.filenameToUrl(file.getName());
-			assert(pageUrl != null);
+			assert(pageUrl != null) : "not exists " + file.getName();
 			SearchResult res = new SearchResult(keyword, occurrences, pageUrl);
 			results.add(res);
 		}
