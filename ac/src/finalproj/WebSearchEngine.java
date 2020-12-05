@@ -102,7 +102,7 @@ public class WebSearchEngine {
         WebSearchEngine engine = new WebSearchEngine();
         List<SearchResult> tops = engine.search(keyword, url, 10);
 
-        System.out.println(String.format("\n===================search result of '%s'====================", keyword));
+        System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
         tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
         
 //        System.out.println( "Hello! Please input a string to search for" );
