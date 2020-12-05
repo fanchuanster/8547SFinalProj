@@ -195,12 +195,15 @@ public class WebSearchEngine {
 //        System.out.println( "Hello! Please input a link to search" );
 //        String url = sc.nextLine();
         String url = "https://www.newsmax.com/";
-        String keyword = "newsmax";
+        String[] keywords = {"newsmax", "will"};
         WebSearchEngine engine = new WebSearchEngine(3,5);
-        List<SearchResult> tops = engine.search(keyword, url, 3);
+        
+        for (final String keyword:keywords) {
+        	List<SearchResult> tops = engine.search(keyword, url, 3);
 
-        System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
-        tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
+            System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
+            tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
+        }
         
 //        System.out.println( "Hello! Please input a string to search for" );
 //        String word = sc.nextLine();
