@@ -98,10 +98,11 @@ public class WebSearchEngine {
 //        System.out.println( "Hello! Please input a link to search" );
 //        String url = sc.nextLine();
         String url = "https://www.newsmax.com/";
-        
+        String keyword = "newsmax";
         WebSearchEngine engine = new WebSearchEngine();
-        List<SearchResult> tops = engine.search("newsmax", url, 10);
-        
+        List<SearchResult> tops = engine.search(keyword, url, 10);
+
+        System.out.println(String.format("\n===================search result of '%s'====================", keyword));
         tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
         
 //        System.out.println( "Hello! Please input a string to search for" );
