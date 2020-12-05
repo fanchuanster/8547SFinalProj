@@ -3,14 +3,10 @@ package finalproj;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.HashSet;
 import java.util.Hashtable;
 
-import javax.net.ssl.HostnameVerifier;
-import javax.net.ssl.HttpsURLConnection;
-import javax.net.ssl.SSLContext;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -32,8 +28,8 @@ public class WebCrawler {
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
 	Hashtable<String, String> filenameToUrl;
-	WebCrawler(String url, int depth, int maximum, Proxy proxy) {
-		this.initialUrl = url;
+	WebCrawler(int depth, int maximum, Proxy proxy) {
+		
 		this.proxy = proxy;
 		this.depth = depth;
 		this.maximum = maximum;
@@ -127,8 +123,9 @@ public class WebCrawler {
 		return null;
 	}
 		
-	public int downloadPages() {
-		this.processPage(this.initialUrl, 0);
+	public int downloadPages(String url) {
+		this.initialUrl = url;
+		this.processPage(url, 0);
 		return this.filenameToUrl.size();
 	}
 	
