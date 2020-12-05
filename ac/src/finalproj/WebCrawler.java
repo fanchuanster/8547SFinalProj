@@ -32,7 +32,6 @@ public class WebCrawler {
 	int depth;
 	int maximum;
 	Proxy proxy;
-	int pagesProcessed;
 	
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
@@ -43,7 +42,6 @@ public class WebCrawler {
 		this.depth = depth;
 		this.maximum = maximum;
 		
-		this.pagesProcessed = 0;
 		
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
@@ -117,13 +115,12 @@ public class WebCrawler {
             System.out.println( "downloaded " + filename + " from " + url);
             this.filenameToUrl.put(filename, url);
             
-            this.pagesProcessed++;
             depth++;
             
             if (this.depth != 0 && depth > this.depth) {
             	return;
             }
-            if (this.maximum != 0 && this.pagesProcessed > this.maximum) {
+            if (this.maximum != 0 && this.filenameToUrl.size() > this.maximum) {
             	return;
             }
             	
@@ -145,7 +142,7 @@ public class WebCrawler {
 	}
 	
 	public String filenameToUrl(String filename) {
-		if (this.filenameToUrl.containsKey(filenameToUrl)) {
+		if (this.filenameToUrl.containsKey(filename)) {
 			return this.filenameToUrl.get(filename);
 		}
 		return null;
@@ -153,7 +150,7 @@ public class WebCrawler {
 		
 	public int downloadPages() {
 		this.processPage(this.initialUrl, 0);
-		return this.pagesProcessed;
+		return this.filenameToUrl.size();
 	}
 	
 }
