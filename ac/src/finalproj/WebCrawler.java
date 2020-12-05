@@ -118,6 +118,9 @@ public class WebCrawler {
 	}
 		
 	public Enumeration<String> downloadPages(String initialUrl) {
+		if (this.filenameToUrls.containsKey(initialUrl)) {
+			return this.filenameToUrls.get(initialUrl).keys();
+		}
 		Hashtable<String, String> filenameToUrlTmp = new Hashtable<String, String>();
 		
 		this.processPage(initialUrl, initialUrl, 0, filenameToUrlTmp);	
