@@ -54,11 +54,6 @@ public class App {
 	}
 
 	public static void main(String[] args) {
-//    	Scanner sc = new Scanner(System.in);
-//      System.out.println( "Hello! Please input a link to search" );
-//      String url = sc.nextLine();
-//		
-//		Hashtable<String, String[]> tosearches = new Hashtable<String, String[]>();
 //		tosearches.put("https://www.newsmax.com/", new String[]{"newsmax", "will"});
 //		tosearches.put("https://en.wikipedia.org/wiki/New_Tang_Dynasty_Television", new String[]{"television", "group"});
 //		tosearches.put("https://www.newsmax.com/", new String[]{"win", "sidney"});
