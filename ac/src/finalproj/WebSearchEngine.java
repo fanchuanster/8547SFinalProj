@@ -167,33 +167,32 @@ public class WebSearchEngine {
 	}
 	
 	/**
-	 * search for keyword in page and descendant pages of a given original URL.
+	 * regex search page and descendant pages of a given original URL.
 	 * it's a one-time search from scratch without building dictionary.
-	 * @param keyword the keyword to search for.
-	 * @param url the original URL to start searching.
+	 * @param keywordPattern the keyword pattern to search for.
+	 * @param initialUrl the original URL to start searching.
 	 * @param topN indicates how many top ranked results for the keyword to return
 	 * @return return top ranked results for the keyword
 	 */
 
-//	public List<SearchResult> search1(String keyword, String url, int topN) {
-//		int count = crawler.downloadPages(url);
-//		
-////		System.out.println(String.format("%d pages downloaded spreading from %s", count, url));
-//		
-//		Pattern pattern = Pattern.compile(keyword, Pattern.CASE_INSENSITIVE);
-//		
-//		File pagesDir = new File(crawler.getPagesDir());
-//		List<SearchResult> results = new ArrayList<SearchResult>();
-//		for (final File file : pagesDir.listFiles()) {
-//			int occurrences = searchFile(pattern, file);
-//			String pageUrl = crawler.filenameToUrl(file.getName());
-//			assert(pageUrl != null) : "not exists " + file.getName();
-//			SearchResult res = new SearchResult(keyword, occurrences, pageUrl);
-//			results.add(res);
-//		}
-//		
-//		return getTopResults(results, topN);
-//	}
+	public List<SearchResult> searchPattern(String keywordPattern, String initialUrl, int topN) {
+		Enumeration<String> filenames = crawler.downloadPages(initialUrl);
+		
+		Pattern pattern = Pattern.compile(keywordPattern, Pattern.CASE_INSENSITIVE);
+		
+		List<SearchResult> results = new ArrayList<SearchResult>();
+		
+		while (filenames.hasMoreElements()) {
+			String filename = filenames.nextElement();
+			int occurrences = searchFile(pattern, new File(filename));
+			String pageUrl = crawler.filenameToUrl(initialUrl, filename);
+			assert(pageUrl != null) : "not exists " + filename;
+			SearchResult res = new SearchResult(keywordPattern, occurrences, pageUrl);
+			results.add(res);
+        }
+		
+		return getTopResults(results, topN);
+	}
 	
 	public static void main(String[] args) {
 		
