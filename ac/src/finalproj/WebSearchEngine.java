@@ -7,6 +7,7 @@ import java.io.StreamTokenizer;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
@@ -97,32 +98,34 @@ public class WebSearchEngine {
 			return this.dictBuiltFromUrls.get(url);
 		}
 		
-		String[] pagesFileNames = crawler.downloadPages(url);
+		Enumeration<String> pagesFileNames = crawler.downloadPages(url);
 				
 		Hashtable<String, TST<Integer>> fileWordsOccurrences = new Hashtable<String, TST<Integer>>();
-		for (final String pagesFileName:pagesFileNames) {
-			File pageFile = new File(pagesFileName);
+		while (pagesFileNames.hasMoreElements()) {
+			String filename = pagesFileNames.nextElement();
+			File pageFile = new File(filename);
 			TST<Integer> tst = CountWords(pageFile);
-			fileWordsOccurrences.put(pagesFileName, tst);
+			fileWordsOccurrences.put(filename, tst);
 		}
 		this.dictBuiltFromUrls.put(url, fileWordsOccurrences);
 		
 		return fileWordsOccurrences;
 	}
 	
-	public List<SearchResult> search(String keyword, String url, int topN) {
-		
-		
+	public List<SearchResult> search(String keyword, String initialUrl, int topN) {
 		
 		List<SearchResult> results = new ArrayList<SearchResult>();
 		
-		Set<String> filenames = this.fileWordsOccurrences.keySet();
+		Hashtable<String, TST<Integer>> dict = getDict(initialUrl);
+		assert(dict != null);
+		
+		Set<String> filenames = dict.keySet();
 		 
 		for(String filename : filenames) {
-			TST<Integer> tst = this.fileWordsOccurrences.get(filename);
+			TST<Integer> tst = dict.get(filename);
 			if (tst.contains(keyword)) {
 				int occurrences = tst.get(keyword);
-				results.add(new SearchResult(keyword, occurrences, crawler.filenameToUrl(filename)));
+				results.add(new SearchResult(keyword, occurrences, crawler.filenameToUrl(initialUrl, filename)));
 			}
         }
 		
@@ -172,25 +175,25 @@ public class WebSearchEngine {
 	 * @return return top ranked results for the keyword
 	 */
 
-	public List<SearchResult> search1(String keyword, String url, int topN) {
-		int count = crawler.downloadPages(url);
-		
-//		System.out.println(String.format("%d pages downloaded spreading from %s", count, url));
-		
-		Pattern pattern = Pattern.compile(keyword, Pattern.CASE_INSENSITIVE);
-		
-		File pagesDir = new File(crawler.getPagesDir());
-		List<SearchResult> results = new ArrayList<SearchResult>();
-		for (final File file : pagesDir.listFiles()) {
-			int occurrences = searchFile(pattern, file);
-			String pageUrl = crawler.filenameToUrl(file.getName());
-			assert(pageUrl != null) : "not exists " + file.getName();
-			SearchResult res = new SearchResult(keyword, occurrences, pageUrl);
-			results.add(res);
-		}
-		
-		return getTopResults(results, topN);
-	}
+//	public List<SearchResult> search1(String keyword, String url, int topN) {
+//		int count = crawler.downloadPages(url);
+//		
+////		System.out.println(String.format("%d pages downloaded spreading from %s", count, url));
+//		
+//		Pattern pattern = Pattern.compile(keyword, Pattern.CASE_INSENSITIVE);
+//		
+//		File pagesDir = new File(crawler.getPagesDir());
+//		List<SearchResult> results = new ArrayList<SearchResult>();
+//		for (final File file : pagesDir.listFiles()) {
+//			int occurrences = searchFile(pattern, file);
+//			String pageUrl = crawler.filenameToUrl(file.getName());
+//			assert(pageUrl != null) : "not exists " + file.getName();
+//			SearchResult res = new SearchResult(keyword, occurrences, pageUrl);
+//			results.add(res);
+//		}
+//		
+//		return getTopResults(results, topN);
+//	}
 	
 	public static void main(String[] args) {
 		

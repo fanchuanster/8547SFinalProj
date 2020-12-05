@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.Proxy;
+import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -18,29 +18,26 @@ import java.net.URL;
 
 public class WebCrawler {
 
-	String outputDir = "output/pages/";
+	final String outputDir = "output/pages/";
 	
-	String initialUrl;
-	int depth;
+	int maxDepth;
 	int maximum;
 	Proxy proxy;
 	
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
 	Hashtable<String, Hashtable<String, String>> filenameToUrls;
-	Hashtable<String, String> filenameToUrlTmp;
 	
 	WebCrawler(int depth, int maximum, Proxy proxy) {
 		
 		this.proxy = proxy;
-		this.depth = depth;
+		this.maxDepth = depth;
 		this.maximum = maximum;
 		
 		
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
 		this.filenameToUrls = new Hashtable<String, Hashtable<String, String>>();
-		this.filenameToUrlTmp = new Hashtable<String, String>();
 		
 		/*
 		 * prepare an empty output folder for downloading.
@@ -62,23 +59,23 @@ public class WebCrawler {
         return null;
 	}
 	
-	private boolean internalUrl(String url) {
-		URL u = this.parseUrl(this.initialUrl);
+	private boolean internalUrl(String initialUrl, String url) {
+		URL u = this.parseUrl(initialUrl);
 		URL inUrl = this.parseUrl(url);
 		if (inUrl == null) {
 			return false;
 		}
 		return u.getHost().equals(inUrl.getHost());
 	}
-	private void processPage(String url, int depth) {
+	private void processPage(String initialUrl, String url, int depth, Hashtable<String, String> filenameToUrlTmp) {
 		if (this.links.contains(url) || this.invalidLinks.contains(url)) {
 			return;
 		}
 		
-		if (this.depth != 0 && depth >= this.depth) {
+		if (this.maxDepth != 0 && depth >= this.maxDepth) {
         	return;
         }
-        if (this.maximum != 0 && this.filenameToUrlTmp.size() >= this.maximum) {
+        if (this.maximum != 0 && filenameToUrlTmp.size() >= this.maximum) {
         	return;
         }
         		
@@ -88,30 +85,26 @@ public class WebCrawler {
 					  .get();
             links.add(url);
             
-            String filename = String.format("%s.%d.txt", document.title().replaceAll("[\s,|]+", ""), System.nanoTime());
-            FileWriter fw = new FileWriter(outputDir + filename);
+            String filename = outputDir + String.format("%s.%d.txt", document.title().replaceAll("[\s,|]+", ""), System.nanoTime());
+            FileWriter fw = new FileWriter(filename);
             fw.write(document.body().text());
             fw.close();
-            System.out.println((this.filenameToUrlTmp.size()+1)+"/"+(depth+1) + " downloaded " + filename + " from " + url);
-            assert !this.filenameToUrlTmp.containsKey(filename) : filename + " already exists";
-            this.filenameToUrlTmp.put(filename, url);
+            System.out.println((filenameToUrlTmp.size()+1)+"/"+(depth+1) + " downloaded " + filename + " from " + url);
+            assert !filenameToUrlTmp.containsKey(filename) : filename + " already exists";
+            filenameToUrlTmp.put(filename, url);
             
             depth++;            	
             Elements pageLinks = document.select("a[href]");
             for (Element link : pageLinks) {
             	String childUrl = link.attr("abs:href");
-            	if (this.internalUrl(childUrl)) {
-            		processPage(link.attr("abs:href"), depth);
+            	if (this.internalUrl(initialUrl, childUrl)) {
+            		processPage(initialUrl, link.attr("abs:href"), depth, filenameToUrlTmp);
             	}
             }
         } catch (IOException e) {
             System.err.println("For '" + url + "': " + e.getMessage());
             this.invalidLinks.add(url);
         }
-	}
-	
-	public String getPagesDir() {
-		return this.outputDir;
 	}
 	
 	public String filenameToUrl(String initialUrl, String filename) {
@@ -124,18 +117,13 @@ public class WebCrawler {
 		return null;
 	}
 		
-	public int downloadPages(String url) {
-		this.initialUrl = url;
-		this.processPage(url, 0);
+	public Enumeration<String> downloadPages(String initialUrl) {
+		Hashtable<String, String> filenameToUrlTmp = new Hashtable<String, String>();
 		
-		Set<String> keysets = this.filenameToUrlTmp.keySet();
-		for (final String key:keysets) {
-			this.filenameToUrl.put(key, this.filenameToUrlTmp.get(key));
-		}
+		this.processPage(initialUrl, initialUrl, 0, filenameToUrlTmp);	
+		this.filenameToUrls.put(initialUrl, filenameToUrlTmp);
 		
-		int n = this.filenameToUrlTmp.size();
-		this.filenameToUrlTmp.clear();
-		return n;
+		return filenameToUrlTmp.keys();
 	}
 	
 }
