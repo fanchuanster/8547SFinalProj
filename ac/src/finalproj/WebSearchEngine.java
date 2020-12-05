@@ -34,16 +34,16 @@ public class WebSearchEngine {
 	
 	int MaxPages = 5;
 	int Depth = 3;
-	String dictBuiltFromUrl;
 	
 	Hashtable<String, TST<Integer>> fileWordsOccurrences;
+	Hashtable<String, Hashtable<String, TST<Integer>>> dictBuiltFromUrls;
 	WebCrawler crawler;
 	
 	public WebSearchEngine(int depth, int maxPages) {
 		this.Depth = depth;
 		this.MaxPages = maxPages;
 		
-		this.fileWordsOccurrences = new Hashtable<String, TST<Integer>>();
+		this.dictBuiltFromUrls = new Hashtable<String, Hashtable<String, TST<Integer>>>();
 		this.crawler = new WebCrawler(Depth, MaxPages,
         		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
 	}
@@ -91,25 +91,28 @@ public class WebSearchEngine {
 		return tst;
 	}
 	
-	private void initialize(String url) {
-		crawler.downloadPages(url);
-		buildDict(crawler.getPagesDir());
-	}
 
-	private void buildDict(String pagesDirName) {
-		File pagesDir = new File(pagesDirName);
-		for (final File file : pagesDir.listFiles()) {
-			TST<Integer> tst = CountWords(file);
-			this.fileWordsOccurrences.put(file.getName(), tst);
+	private Hashtable<String, TST<Integer>> getDict(String url) {
+		if (this.dictBuiltFromUrls.containsKey(url)) {
+			return this.dictBuiltFromUrls.get(url);
 		}
+		
+		String[] pagesFileNames = crawler.downloadPages(url);
+				
+		Hashtable<String, TST<Integer>> fileWordsOccurrences = new Hashtable<String, TST<Integer>>();
+		for (final String pagesFileName:pagesFileNames) {
+			File pageFile = new File(pagesFileName);
+			TST<Integer> tst = CountWords(pageFile);
+			fileWordsOccurrences.put(pagesFileName, tst);
+		}
+		this.dictBuiltFromUrls.put(url, fileWordsOccurrences);
+		
+		return fileWordsOccurrences;
 	}
 	
 	public List<SearchResult> search(String keyword, String url, int topN) {
 		
-		if (!url.equals(this.dictBuiltFromUrl)) {
-			initialize(url);
-			this.dictBuiltFromUrl = url;
-		}
+		
 		
 		List<SearchResult> results = new ArrayList<SearchResult>();
 		
@@ -195,15 +198,22 @@ public class WebSearchEngine {
 //      System.out.println( "Hello! Please input a link to search" );
 //      String url = sc.nextLine();
 		
-        String url = "https://www.newsmax.com/";
-        String[] keywords = {"newsmax", "will"};
+		Hashtable<String, String[]> tosearches = new Hashtable<String, String[]>();
+		tosearches.put("https://www.newsmax.com/", new String[]{"newsmax", "will"});
+		tosearches.put("https://en.wikipedia.org/wiki/New_Tang_Dynasty_Television", new String[]{"television", "group"});
+		tosearches.put("https://www.newsmax.com/", new String[]{"win", "sidney"});
+		
         WebSearchEngine engine = new WebSearchEngine(3,5);
         
-        for (final String keyword:keywords) {
-        	List<SearchResult> tops = engine.search(keyword, url, 3);
+        Set<String> urls = tosearches.keySet();
+        for (final String url:urls) {
+        	String[] keywords = tosearches.get(url);
+        	for (final String keyword:keywords) {
+            	List<SearchResult> tops = engine.search(keyword, url, 3);
 
-            System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
-            tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
+                System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
+                tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
+        	}
         }
         
 //        System.out.println( "Hello! Please input a string to search for" );

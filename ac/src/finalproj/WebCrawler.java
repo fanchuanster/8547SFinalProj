@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.net.Proxy;
 import java.util.HashSet;
 import java.util.Hashtable;
-
+import java.util.Set;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -27,7 +27,9 @@ public class WebCrawler {
 	
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
-	Hashtable<String, String> filenameToUrl;
+	Hashtable<String, Hashtable<String, String>> filenameToUrls;
+	Hashtable<String, String> filenameToUrlTmp;
+	
 	WebCrawler(int depth, int maximum, Proxy proxy) {
 		
 		this.proxy = proxy;
@@ -37,7 +39,8 @@ public class WebCrawler {
 		
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
-		this.filenameToUrl = new Hashtable<String, String>();
+		this.filenameToUrls = new Hashtable<String, Hashtable<String, String>>();
+		this.filenameToUrlTmp = new Hashtable<String, String>();
 		
 		/*
 		 * prepare an empty output folder for downloading.
@@ -45,12 +48,7 @@ public class WebCrawler {
 		File directory = new File(this.outputDir);
 	    if (! directory.exists()){
 	        directory.mkdirs();
-	    } else {
-	    	File[] files = directory.listFiles();
-	    	for (File f : files ) {
-	    		f.delete();
-	    	}		    
-	    }	    
+	    }
 	}
 	
 	private URL parseUrl(String url) {
@@ -80,7 +78,7 @@ public class WebCrawler {
 		if (this.depth != 0 && depth >= this.depth) {
         	return;
         }
-        if (this.maximum != 0 && this.filenameToUrl.size() >= this.maximum) {
+        if (this.maximum != 0 && this.filenameToUrlTmp.size() >= this.maximum) {
         	return;
         }
         		
@@ -94,9 +92,9 @@ public class WebCrawler {
             FileWriter fw = new FileWriter(outputDir + filename);
             fw.write(document.body().text());
             fw.close();
-            System.out.println((this.filenameToUrl.size()+1)+"/"+(depth+1) + " downloaded " + filename + " from " + url);
-            assert !this.filenameToUrl.containsKey(filename) : filename + " already exists";
-            this.filenameToUrl.put(filename, url);
+            System.out.println((this.filenameToUrlTmp.size()+1)+"/"+(depth+1) + " downloaded " + filename + " from " + url);
+            assert !this.filenameToUrlTmp.containsKey(filename) : filename + " already exists";
+            this.filenameToUrlTmp.put(filename, url);
             
             depth++;            	
             Elements pageLinks = document.select("a[href]");
@@ -116,9 +114,12 @@ public class WebCrawler {
 		return this.outputDir;
 	}
 	
-	public String filenameToUrl(String filename) {
-		if (this.filenameToUrl.containsKey(filename)) {
-			return this.filenameToUrl.get(filename);
+	public String filenameToUrl(String initialUrl, String filename) {
+		if (this.filenameToUrls.containsKey(initialUrl)) {
+			Hashtable<String, String> filenameToUrl = this.filenameToUrls.get(initialUrl);
+			if (filenameToUrl.containsKey(filename)) {
+				return filenameToUrl.get(filename);
+			}
 		}
 		return null;
 	}
@@ -126,7 +127,15 @@ public class WebCrawler {
 	public int downloadPages(String url) {
 		this.initialUrl = url;
 		this.processPage(url, 0);
-		return this.filenameToUrl.size();
+		
+		Set<String> keysets = this.filenameToUrlTmp.keySet();
+		for (final String key:keysets) {
+			this.filenameToUrl.put(key, this.filenameToUrlTmp.get(key));
+		}
+		
+		int n = this.filenameToUrlTmp.size();
+		this.filenameToUrlTmp.clear();
+		return n;
 	}
 	
 }
