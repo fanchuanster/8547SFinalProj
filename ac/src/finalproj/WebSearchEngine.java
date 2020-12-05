@@ -91,7 +91,7 @@ public class WebSearchEngine {
 		}
 		return tst;
 	}
-	
+
 
 	private Hashtable<String, TST<Integer>> getDict(String url) {
 		if (this.dictBuiltFromUrls.containsKey(url)) {
@@ -150,7 +150,7 @@ public class WebSearchEngine {
 	    return occurrences;
 	}
 	
-	List<SearchResult> getTopResults (List<SearchResult> results, int topN) {
+	private List<SearchResult> getTopResults (List<SearchResult> results, int topN) {
 		BinaryHeap<SearchResult> heap = new BinaryHeap<SearchResult>();
 		
 		for (SearchResult result:results) {
@@ -211,7 +211,7 @@ public class WebSearchEngine {
         for (final String url:urls) {
         	String[] keywords = tosearches.get(url);
         	for (final String keyword:keywords) {
-            	List<SearchResult> tops = engine.search(keyword, url, 3);
+            	List<SearchResult> tops = engine.searchPattern(keyword, url, 3);
 
                 System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
                 tops.stream().map(s -> String.format("%d\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
