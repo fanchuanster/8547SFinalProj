@@ -192,8 +192,9 @@ public class WebSearchEngine {
 	public static void main(String[] args) {
 		
 //    	Scanner sc = new Scanner(System.in);
-//        System.out.println( "Hello! Please input a link to search" );
-//        String url = sc.nextLine();
+//      System.out.println( "Hello! Please input a link to search" );
+//      String url = sc.nextLine();
+		
         String url = "https://www.newsmax.com/";
         String[] keywords = {"newsmax", "will"};
         WebSearchEngine engine = new WebSearchEngine(3,5);
