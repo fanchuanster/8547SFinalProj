@@ -73,7 +73,7 @@ public class WebDict {
 		 * #4
 		 */
 		WebDict webDict = new WebDict();
-		webDict.buildDict(WebSearchEngine.INPUT_PAGES_DIR);
+		webDict.buildDict(WebSearchEngineO.INPUT_PAGES_DIR);
 		SplayTree<IntKeyObject> spTree = webDict.getWordsFrequenciesAsSplayTree(true);
 		
 		/*

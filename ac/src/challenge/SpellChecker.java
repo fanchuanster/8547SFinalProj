@@ -43,7 +43,7 @@ public class SpellChecker {
 		Hashtable<String, Integer> wordsFrequencies = WordsCounter.CountWords(chosenFile);
 		
 		WebDict webDict = new WebDict();
-		webDict.buildDict(WebSearchEngine.INPUT_PAGES_DIR);
+		webDict.buildDict(WebSearchEngineO.INPUT_PAGES_DIR);
 		Hashtable<String, Integer> hashtable = webDict.getWordsFrequenciesAsHashtable();
 		System.out.println("WebDict is of size " + hashtable.size());		
 		

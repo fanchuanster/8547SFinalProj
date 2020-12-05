@@ -17,7 +17,7 @@ import java.util.StringTokenizer;
  * @author donwen
  *
  */
-public class WebSearchEngine {
+public class WebSearchEngineO {
 	public static final String INPUT_PAGES_DIR = "resources\\W3C Web Pages\\Text\\";
 	
 	public static int GetFileMatchScore(String filePath, String[] keywords) {
