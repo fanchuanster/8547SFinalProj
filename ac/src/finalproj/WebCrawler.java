@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.util.HashSet;
+import java.util.Hashtable;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -25,28 +26,28 @@ import java.net.URL;
 
 public class WebCrawler {
 
+	String outputDir = "output/pages/";
+	
 	String initialUrl;
 	int depth;
 	int maximum;
-	String outputDir;
 	Proxy proxy;
 	int pagesProcessed;
 	
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
-	
-	WebCrawler(String url, int depth, int maximum, String outputDir, Proxy proxy) {
+	Hashtable<String, String> filenameToUrl;
+	WebCrawler(String url, int depth, int maximum, Proxy proxy) {
 		this.initialUrl = url;
 		this.proxy = proxy;
 		this.depth = depth;
-		this.outputDir = outputDir;
 		this.maximum = maximum;
 		
 		this.pagesProcessed = 0;
 		
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
-		
+		this.filenameToUrl = new Hashtable<String, String>();
 		File directory = new File(this.outputDir);
 	    if (! directory.exists()){
 	        directory.mkdirs();
@@ -114,6 +115,7 @@ public class WebCrawler {
             fw.write(document.body().text());
             fw.close();
             System.out.println( "downloaded " + filename + " from " + url);
+            this.filenameToUrl.put(filename, url);
             
             this.pagesProcessed++;
             depth++;
@@ -140,6 +142,13 @@ public class WebCrawler {
 	
 	public String getPagesDir() {
 		return this.outputDir;
+	}
+	
+	public String filenameToUrl(String filename) {
+		if (this.filenameToUrl.containsKey(filenameToUrl)) {
+			return this.filenameToUrl.get(filename);
+		}
+		return null;
 	}
 		
 	public int downloadPages() {
