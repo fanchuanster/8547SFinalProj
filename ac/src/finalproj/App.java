@@ -30,13 +30,7 @@ public class App
         String url = sc.nextLine();
         url = "https://www.newsmax.com/";
         
-        WebCrawler crawler = new WebCrawler(url, 3, 50, outputDir,
-        		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
-//        crawler.trustEveryone();
         
-        int count = crawler.downloadPages();
-        
-        System.out.println(String.format("%d pages downloaded,find them in %s", count, crawler.getPagesDir()));
         
         System.out.println( "Hello! Please input a string to search for" );
         String word = sc.nextLine();
