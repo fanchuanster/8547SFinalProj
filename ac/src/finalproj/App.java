@@ -52,9 +52,6 @@ public class App {
 	}
 
 	public static void main(String[] args) {
-//		tosearches.put("https://www.newsmax.com/", new String[]{"newsmax", "will"});
-//		tosearches.put("https://en.wikipedia.org/wiki/New_Tang_Dynasty_Television", new String[]{"television", "group"});
-//		tosearches.put("https://www.newsmax.com/", new String[]{"win", "sidney"});
 		final int SearchDepth = 3;
 		final int SearchMaxPages = 5;
         WebSearchEngine engine = new WebSearchEngine(SearchDepth,SearchMaxPages);
