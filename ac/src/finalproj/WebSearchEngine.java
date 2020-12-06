@@ -42,7 +42,8 @@ public class WebSearchEngine {
 		
 		this.dictBuiltFromInitialUrls = new Hashtable<String, Hashtable<String, TST<Integer>>>();
 		this.crawler = new WebCrawler(Depth, MaxPages,
-        		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
+        		null);
+//		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080))
 	}
 	
 	/**
