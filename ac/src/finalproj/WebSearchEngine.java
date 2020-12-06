@@ -33,15 +33,14 @@ public class WebSearchEngine {
 	int MaxPages = 5;
 	int Depth = 3;
 	
-	Hashtable<String, TST<Integer>> fileWordsOccurrences;
-	Hashtable<String, Hashtable<String, TST<Integer>>> dictBuiltFromUrls;
+	Hashtable<String, Hashtable<String, TST<Integer>>> dictBuiltFromInitialUrls;
 	WebCrawler crawler;
 	
 	public WebSearchEngine(int depth, int maxPages) {
 		this.Depth = depth;
 		this.MaxPages = maxPages;
 		
-		this.dictBuiltFromUrls = new Hashtable<String, Hashtable<String, TST<Integer>>>();
+		this.dictBuiltFromInitialUrls = new Hashtable<String, Hashtable<String, TST<Integer>>>();
 		this.crawler = new WebCrawler(Depth, MaxPages,
         		new Proxy(Proxy.Type.HTTP, new InetSocketAddress("web-proxy.il.softwaregrp.net", 8080)));
 	}
@@ -90,12 +89,12 @@ public class WebSearchEngine {
 	}
 
 
-	private Hashtable<String, TST<Integer>> getDict(String url) {
-		if (this.dictBuiltFromUrls.containsKey(url)) {
-			return this.dictBuiltFromUrls.get(url);
+	private Hashtable<String, TST<Integer>> getDict(String initialUrl) {
+		if (this.dictBuiltFromInitialUrls.containsKey(initialUrl)) {
+			return this.dictBuiltFromInitialUrls.get(initialUrl);
 		}
 		
-		Enumeration<String> pagesFileNames = crawler.downloadPages(url);
+		Enumeration<String> pagesFileNames = crawler.downloadPages(initialUrl);
 				
 		Hashtable<String, TST<Integer>> fileWordsOccurrences = new Hashtable<String, TST<Integer>>();
 		while (pagesFileNames.hasMoreElements()) {
@@ -104,7 +103,7 @@ public class WebSearchEngine {
 			TST<Integer> tst = CountWords(pageFile);
 			fileWordsOccurrences.put(filename, tst);
 		}
-		this.dictBuiltFromUrls.put(url, fileWordsOccurrences);
+		this.dictBuiltFromInitialUrls.put(initialUrl, fileWordsOccurrences);
 		
 		return fileWordsOccurrences;
 	}
@@ -122,7 +121,7 @@ public class WebSearchEngine {
 			TST<Integer> tst = dict.get(filename);
 			if (tst.contains(keyword)) {
 				int occurrences = tst.get(keyword);
-				results.add(new SearchResult(keyword, occurrences, crawler.filenameToUrl(initialUrl, filename)));
+				results.add(new SearchResult(keyword, occurrences, crawler.filenameToPageUrl(initialUrl, filename)));
 			}
         }
 		
@@ -183,7 +182,7 @@ public class WebSearchEngine {
 		while (filenames.hasMoreElements()) {
 			String filename = filenames.nextElement();
 			int occurrences = searchFile(pattern, new File(filename));
-			String pageUrl = crawler.filenameToUrl(initialUrl, filename);
+			String pageUrl = crawler.filenameToPageUrl(initialUrl, filename);
 			assert(pageUrl != null) : "not exists " + filename;
 			SearchResult res = new SearchResult(keywordPattern, occurrences, pageUrl);
 			results.add(res);

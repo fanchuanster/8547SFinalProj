@@ -26,9 +26,9 @@ public class WebCrawler {
 	
 	HashSet<String> links;
 	HashSet<String> invalidLinks;
-	Hashtable<String, Hashtable<String, String>> filenameToUrls;
+	Hashtable<String, Hashtable<String, String>> filenameToPageUrls;
 	
-	WebCrawler(int depth, int maximum, Proxy proxy) {
+	public WebCrawler(int depth, int maximum, Proxy proxy) {
 		
 		this.proxy = proxy;
 		this.maxDepth = depth;
@@ -37,7 +37,7 @@ public class WebCrawler {
 		
 		this.links = new HashSet<String>();
 		this.invalidLinks = new HashSet<String>();
-		this.filenameToUrls = new Hashtable<String, Hashtable<String, String>>();
+		this.filenameToPageUrls = new Hashtable<String, Hashtable<String, String>>();
 		
 		/*
 		 * prepare an empty output folder for downloading.
@@ -65,7 +65,7 @@ public class WebCrawler {
 		if (inUrl == null) {
 			return false;
 		}
-		return u.getHost().equals(inUrl.getHost());
+		return u.getHost().toLowerCase().equals(inUrl.getHost().toLowerCase());
 	}
 	private void processPage(String initialUrl, String url, int depth, Hashtable<String, String> filenameToUrlTmp) {
 		if (this.links.contains(url) || this.invalidLinks.contains(url)) {
@@ -107,9 +107,9 @@ public class WebCrawler {
         }
 	}
 	
-	public String filenameToUrl(String initialUrl, String filename) {
-		if (this.filenameToUrls.containsKey(initialUrl)) {
-			Hashtable<String, String> filenameToUrl = this.filenameToUrls.get(initialUrl);
+	public String filenameToPageUrl(String initialUrl, String filename) {
+		if (this.filenameToPageUrls.containsKey(initialUrl)) {
+			Hashtable<String, String> filenameToUrl = this.filenameToPageUrls.get(initialUrl);
 			if (filenameToUrl.containsKey(filename)) {
 				return filenameToUrl.get(filename);
 			}
@@ -118,13 +118,13 @@ public class WebCrawler {
 	}
 		
 	public Enumeration<String> downloadPages(String initialUrl) {
-		if (this.filenameToUrls.containsKey(initialUrl)) {
-			return this.filenameToUrls.get(initialUrl).keys();
+		if (this.filenameToPageUrls.containsKey(initialUrl)) {
+			return this.filenameToPageUrls.get(initialUrl).keys();
 		}
 		Hashtable<String, String> filenameToUrlTmp = new Hashtable<String, String>();
 		
 		this.processPage(initialUrl, initialUrl, 0, filenameToUrlTmp);	
-		this.filenameToUrls.put(initialUrl, filenameToUrlTmp);
+		this.filenameToPageUrls.put(initialUrl, filenameToUrlTmp);
 		
 		return filenameToUrlTmp.keys();
 	}
