@@ -13,25 +13,24 @@ public class App {
 	static List<String> keywords = new ArrayList<String>();
 	static Scanner sc = new Scanner(System.in);
 	
-	public static boolean promptInput() {
+	public static int promptInput() {
 		
 		initialUrl = null;
 		keywords.clear();
 		
-		
-		boolean ret = false;
+		int action = 0;
 		boolean end = false;
 		while (!end) {
-			System.out.println("Choose action - 1 quit; 2 do search");
+			System.out.println("Choose action - 0 quit; 1 do search; 2 do regex search");
 						
-			int action = sc.nextInt();
+			action = sc.nextInt();
 			sc.nextLine();
 			
 			switch (action) {
-			case 1:
+			case 0:
 				end = true;
-				ret = false;
 				break;
+			case 1:
 			case 2:
 				System.out.println("input a URL to start with:\n");
 				initialUrl = sc.nextLine();
@@ -43,31 +42,37 @@ public class App {
 		        	keywords.add(tokenizer.nextToken());
 		        }
 		        end = true;
-		        ret = true;
 				break;
 			default:
 				break;
 			}
 		}
 		
-		return ret;
+		return action;
 	}
 
 	public static void main(String[] args) {
 //		tosearches.put("https://www.newsmax.com/", new String[]{"newsmax", "will"});
 //		tosearches.put("https://en.wikipedia.org/wiki/New_Tang_Dynasty_Television", new String[]{"television", "group"});
 //		tosearches.put("https://www.newsmax.com/", new String[]{"win", "sidney"});
-		
-        WebSearchEngine engine = new WebSearchEngine(3,5);
+		final int SearchDepth = 3;
+		final int SearchMaxPages = 5;
+        WebSearchEngine engine = new WebSearchEngine(SearchDepth,SearchMaxPages);
         
-        while (promptInput()) {
+        int action = 0;
+        while ((action = promptInput()) != 0) {
         	Hashtable<String, List<String>> tosearches = new Hashtable<String, List<String>>();
     		tosearches.put(initialUrl, keywords);
         	Set<String> urls = tosearches.keySet();
             for (final String url:urls) {
             	List<String> keywords = tosearches.get(url);
             	for (final String keyword:keywords) {
-                	List<SearchResult> tops = engine.searchPattern(keyword, url, 3);
+            		List<SearchResult> tops;
+            		if (action == 1) {
+            			tops = engine.search(keyword, url, 3);
+            		} else {
+            			tops = engine.searchPattern(keyword, url, 3);
+            		}                	
 
                     System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
                     tops.stream().map(s -> String.format("%d times\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);

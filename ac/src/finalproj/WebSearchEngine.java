@@ -110,7 +110,7 @@ public class WebSearchEngine {
 	}
 	
 	public List<SearchResult> search(String keyword, String initialUrl, int topN) {
-		
+		System.out.println("search " + keyword + "...");
 		List<SearchResult> results = new ArrayList<SearchResult>();
 		
 		Hashtable<String, TST<Integer>> dict = getDict(initialUrl);
@@ -173,6 +173,7 @@ public class WebSearchEngine {
 	 */
 
 	public List<SearchResult> searchPattern(String keywordPattern, String initialUrl, int topN) {
+		System.out.println("searchPattern " + keywordPattern + "...");
 		Enumeration<String> filenames = crawler.downloadPages(initialUrl);
 		
 		Pattern pattern = Pattern.compile(keywordPattern, Pattern.CASE_INSENSITIVE);
