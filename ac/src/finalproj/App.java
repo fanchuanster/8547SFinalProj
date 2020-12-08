@@ -49,9 +49,9 @@ class Search implements Runnable{
 				break;
 			case 1:
 			case 2:
-				System.out.println("input a URL to start with:\n");
+				System.out.println("Input an URL to start with:\n");
 				initialUrl = sc.nextLine();
-				System.out.println("input keywords to search for, dilimited by space");
+				System.out.println("Input keywords to search for, dilimited by space");
 				keywords = new ArrayList<String>();
 				String inputLine = sc.nextLine();
 				StringTokenizer tokenizer = new StringTokenizer(inputLine);
