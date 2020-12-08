@@ -16,7 +16,9 @@ import org.jsoup.select.Elements;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class WebCrawler {
+public class WebCrawler extends Thread{
+	
+	 
 
 	final String outputDir = "output/pages/";
 	
@@ -128,5 +130,5 @@ public class WebCrawler {
 		
 		return filenameToUrlTmp.keys();
 	}
-	
+    
 }

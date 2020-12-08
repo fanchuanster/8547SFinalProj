@@ -7,13 +7,30 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-public class App {
+public class App{
 	
+
+    
+	
+
+	public static void main(String[] args) {
+		
+		
+		
+		Thread object = new Thread(new Search()); 
+        object.start();
+        
+        
+	
+    }
+
+}
+class Search implements Runnable{
 	static String initialUrl;
 	static List<String> keywords = new ArrayList<String>();
 	static Scanner sc = new Scanner(System.in);
 	
-	public static int promptInput() {
+	public static int promptInput() { 
 		
 		initialUrl = null;
 		keywords.clear();
@@ -50,8 +67,8 @@ public class App {
 		
 		return action;
 	}
-
-	public static void main(String[] args) {
+	public void run() 
+    { 
 		final int SearchDepth = 3;
 		final int SearchMaxPages = 5;
         WebSearchEngine engine = new WebSearchEngine(SearchDepth,SearchMaxPages);
@@ -73,11 +90,25 @@ public class App {
 
                     System.out.println(String.format("\n===================Search Result of '%s'====================", keyword));
                     tops.stream().map(s -> String.format("%d times\t%s\n", s.occurrences, s.pageUrl)).forEach(System.out::print);
+                    
             	}
             }
         }
         sc.close();
         System.out.println("ended.");
-    }
+		
+		
+        try
+        { 
+            Thread.sleep(10000);
+  
+        } 
+        catch (Exception e) 
+        { 
 
+            System.out.println ("Exception is caught"); 
+        } 
+    } 
+	
+	
 }
